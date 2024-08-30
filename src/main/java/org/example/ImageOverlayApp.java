@@ -72,14 +72,6 @@ public class ImageOverlayApp extends JFrame {
                         int x = rightClickPosition.x - (overlayWidth / 2);
                         int y = rightClickPosition.y - (overlayHeight / 2);
                         g.drawImage(rightClickImage, x, y, overlayWidth, overlayHeight, this);
-                        g.dispose();
-                        try {
-                            File file = new File("saved_image.png");
-                            ImageIO.write(documentImage, "png", file);
-                            System.out.println("Image saved successfully.");
-                        } catch (IOException ex) {
-                            ex.printStackTrace();
-                        }
                     }
                 }
             }
@@ -177,6 +169,7 @@ public class ImageOverlayApp extends JFrame {
         }
 
         try {
+            // Создание нового изображения для сохранения
             BufferedImage resultImage = new BufferedImage(documentImage.getWidth(), documentImage.getHeight(), BufferedImage.TYPE_INT_RGB);
             Graphics2D g2d = resultImage.createGraphics();
             g2d.drawImage(documentImage, 0, 0, null);
@@ -187,16 +180,34 @@ public class ImageOverlayApp extends JFrame {
             int overlayWidth = (int) (documentImage.getHeight() * scaleFactor);
             int overlayHeight = overlayWidth;
 
-            // Наложение печати и подписи на временное изображение
+            // Определение масштаба, который был использован при отрисовке
+            int panelWidth = imagePanel.getWidth();
+            int panelHeight = imagePanel.getHeight();
+            double panelAspectRatio = (double) panelWidth / panelHeight;
+
+            int drawWidth, drawHeight;
+            int drawX = 0, drawY = 0;
+
+            if (imageAspectRatio > panelAspectRatio) {
+                drawWidth = panelWidth;
+                drawHeight = (int) (panelWidth / imageAspectRatio);
+                drawY = (panelHeight - drawHeight) / 2;
+            } else {
+                drawHeight = panelHeight;
+                drawWidth = (int) (panelHeight * imageAspectRatio);
+                drawX = (panelWidth - drawWidth) / 2;
+            }
+
+            // Преобразование координат печатей из экранных в координаты изображения
             if (leftClickPosition.x >= 0 && leftClickPosition.y >= 0) {
-                int x = leftClickPosition.x - (overlayWidth / 2);
-                int y = leftClickPosition.y - (overlayHeight / 2);
+                int x = (leftClickPosition.x - drawX) * documentImage.getWidth() / drawWidth - (overlayWidth / 2);
+                int y = (leftClickPosition.y - drawY) * documentImage.getHeight() / drawHeight - (overlayHeight / 2);
                 g2d.drawImage(leftClickImage, x, y, overlayWidth, overlayHeight, null);
             }
 
             if (rightClickPosition.x >= 0 && rightClickPosition.y >= 0) {
-                int x = rightClickPosition.x - (overlayWidth / 2);
-                int y = rightClickPosition.y - (overlayHeight / 2);
+                int x = (rightClickPosition.x - drawX) * documentImage.getWidth() / drawWidth - (overlayWidth / 2);
+                int y = (rightClickPosition.y - drawY) * documentImage.getHeight() / drawHeight - (overlayHeight / 2);
                 g2d.drawImage(rightClickImage, x, y, overlayWidth, overlayHeight, null);
             }
 
