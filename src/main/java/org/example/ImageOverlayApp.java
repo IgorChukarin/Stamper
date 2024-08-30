@@ -179,9 +179,10 @@ public class ImageOverlayApp extends JFrame {
             recalculateImage(resultImage);
             JFileChooser fileChooser = new JFileChooser();
             int returnValue = fileChooser.showSaveDialog(this);
+
             if (returnValue == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
-                ImageIO.write(resultImage, "jpg", file);
+                FileConverter.saveImageAsPDF(resultImage, file);
                 JOptionPane.showMessageDialog(this, "Image saved successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
             }
         } catch (IOException ex) {
