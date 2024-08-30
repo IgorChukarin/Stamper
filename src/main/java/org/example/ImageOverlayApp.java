@@ -29,6 +29,7 @@ public class ImageOverlayApp extends JFrame {
         rightClickImage = ImageIO.read(getClass().getResource(evklidStampPath));
         leftClickPosition = new Point(-1, -1);
         rightClickPosition = new Point(-1, -1);
+        setIconImage(ImageIO.read(getClass().getResource("/images/icon.PNG")));
         setTitle("Stamper");
         setSize(1000, 650);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -149,6 +150,12 @@ public class ImageOverlayApp extends JFrame {
         int returnValue = fileChooser.showOpenDialog(this);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
+            if (selectedFile != null && selectedFile.getName().toLowerCase().endsWith(".pdf")) {
+                System.out.println("Это PDF файл.");
+                selectedFile = FileConverter.pdfToJpg(selectedFile);
+            } else if (selectedFile != null && selectedFile.getName().toLowerCase().endsWith(".docx")) {
+                System.out.println("Это DOCX файл.");
+            }
             try {
                 Point currentLocation = getLocation();
                 documentImage = ImageIO.read(selectedFile);
@@ -167,56 +174,59 @@ public class ImageOverlayApp extends JFrame {
             JOptionPane.showMessageDialog(this, "Документ не выбран", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-
         try {
             BufferedImage resultImage = new BufferedImage(documentImage.getWidth(), documentImage.getHeight(), BufferedImage.TYPE_INT_RGB);
-            Graphics2D g2d = resultImage.createGraphics();
-            g2d.drawImage(documentImage, 0, 0, null);
-
-            int panelWidth = imagePanel.getWidth();
-            int panelHeight = imagePanel.getHeight();
-
-            double imageAspectRatio = (double) documentImage.getWidth() / documentImage.getHeight();
-            double panelAspectRatio = (double) panelWidth / panelHeight;
-
-            int drawWidth, drawHeight;
-            int drawX = 0, drawY = 0;
-            if (imageAspectRatio > panelAspectRatio) {
-                drawWidth = panelWidth;
-                drawHeight = (int) (panelWidth / imageAspectRatio);
-                drawY = (panelHeight - drawHeight) / 2;
-            } else {
-                drawHeight = panelHeight;
-                drawWidth = (int) (panelHeight * imageAspectRatio);
-                drawX = (panelWidth - drawWidth) / 2;
-            }
-
-            double scaleFactor = setScaleFactor(imageAspectRatio);
-            int overlayWidth = (int) (documentImage.getHeight() * scaleFactor);
-            int overlayHeight = overlayWidth;
-            if (leftClickPosition.x >= 0 && leftClickPosition.y >= 0) {
-                int x = (leftClickPosition.x - drawX) * documentImage.getWidth() / drawWidth - (overlayWidth / 2);
-                int y = (leftClickPosition.y - drawY) * documentImage.getHeight() / drawHeight - (overlayHeight / 2);
-                g2d.drawImage(leftClickImage, x, y, overlayWidth, overlayHeight, null);
-            }
-            if (rightClickPosition.x >= 0 && rightClickPosition.y >= 0) {
-                int x = (rightClickPosition.x - drawX) * documentImage.getWidth() / drawWidth - (overlayWidth / 2);
-                int y = (rightClickPosition.y - drawY) * documentImage.getHeight() / drawHeight - (overlayHeight / 2);
-                g2d.drawImage(rightClickImage, x, y, overlayWidth, overlayHeight, null);
-            }
-            g2d.dispose();
-
+            recalculateImage(resultImage);
             JFileChooser fileChooser = new JFileChooser();
             int returnValue = fileChooser.showSaveDialog(this);
             if (returnValue == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
-                ImageIO.write(resultImage, "png", file);
+                ImageIO.write(resultImage, "jpg", file);
                 JOptionPane.showMessageDialog(this, "Image saved successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
             }
         } catch (IOException ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error saving image.", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+
+    private void recalculateImage(BufferedImage resultImage) {
+        Graphics2D g2d = resultImage.createGraphics();
+        g2d.drawImage(documentImage, 0, 0, null);
+
+        int panelWidth = imagePanel.getWidth();
+        int panelHeight = imagePanel.getHeight();
+
+        double imageAspectRatio = (double) documentImage.getWidth() / documentImage.getHeight();
+        double panelAspectRatio = (double) panelWidth / panelHeight;
+
+        int drawWidth, drawHeight;
+        int drawX = 0, drawY = 0;
+        if (imageAspectRatio > panelAspectRatio) {
+            drawWidth = panelWidth;
+            drawHeight = (int) (panelWidth / imageAspectRatio);
+            drawY = (panelHeight - drawHeight) / 2;
+        } else {
+            drawHeight = panelHeight;
+            drawWidth = (int) (panelHeight * imageAspectRatio);
+            drawX = (panelWidth - drawWidth) / 2;
+        }
+
+        double scaleFactor = setScaleFactor(imageAspectRatio);
+        int overlayWidth = (int) (documentImage.getHeight() * scaleFactor);
+        int overlayHeight = overlayWidth;
+        if (leftClickPosition.x >= 0 && leftClickPosition.y >= 0) {
+            int x = (leftClickPosition.x - drawX) * documentImage.getWidth() / drawWidth - (overlayWidth / 2);
+            int y = (leftClickPosition.y - drawY) * documentImage.getHeight() / drawHeight - (overlayHeight / 2);
+            g2d.drawImage(leftClickImage, x, y, overlayWidth, overlayHeight, null);
+        }
+        if (rightClickPosition.x >= 0 && rightClickPosition.y >= 0) {
+            int x = (rightClickPosition.x - drawX) * documentImage.getWidth() / drawWidth - (overlayWidth / 2);
+            int y = (rightClickPosition.y - drawY) * documentImage.getHeight() / drawHeight - (overlayHeight / 2);
+            g2d.drawImage(rightClickImage, x, y, overlayWidth, overlayHeight, null);
+        }
+        g2d.dispose();
     }
 
 
@@ -244,6 +254,5 @@ public class ImageOverlayApp extends JFrame {
 }
 
 //TODO:
-// добавить расширение jpg при сохранении;
-// конвертировать pdf в jpg;
+// добавить расширение при сохранении;
 // конвертировать jpg в pdf;
