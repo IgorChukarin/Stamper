@@ -19,7 +19,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class FileConverter {
-    public static File pdfToJpg(File pdfFile) {
+    public File pdfToJpg(File pdfFile) {
         if (pdfFile == null || !pdfFile.exists()) {
             throw new IllegalArgumentException("Файл не существует или неверно указан путь.");
         }
@@ -81,5 +81,4 @@ public class FileConverter {
         ImageIO.write(image, "png", baos); // Вы можете использовать другой формат, если необходимо
         return baos.toByteArray();
     }
-
 }

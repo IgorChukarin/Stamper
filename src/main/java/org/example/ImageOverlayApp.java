@@ -18,22 +18,25 @@ public class ImageOverlayApp extends JFrame {
     private Point leftClickPosition;
     private Point rightClickPosition;
     private JPanel imagePanel;
+
     private String evklidSignPath = "/images/evklid/sign.PNG";
     private String evklidStampPath = "/images/evklid/stamp.PNG";
     private String spelsSignPath = "/images/spels/sign.PNG";
     private String spelsStampPath = "/images/spels/stamp.PNG";
+    
+    private ImageLoader imageLoader;
+    private FileConverter fileConverter;
 
 
     public ImageOverlayApp() throws IOException {
+        imageLoader = new ImageLoader();
+        fileConverter = new FileConverter();
+        initializeUI();
+
         leftClickImage = ImageIO.read(getClass().getResource(evklidSignPath));
         rightClickImage = ImageIO.read(getClass().getResource(evklidStampPath));
         leftClickPosition = new Point(-1, -1);
         rightClickPosition = new Point(-1, -1);
-        setIconImage(ImageIO.read(getClass().getResource("/images/icon.PNG")));
-        setTitle("Stamper");
-        setSize(1000, 650);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
 
         imagePanel = new JPanel() {
             @Override
@@ -106,12 +109,10 @@ public class ImageOverlayApp extends JFrame {
         JButton spelsButton = new JButton("Spels");
 
         evklidButton.addActionListener(e -> {
-            loadStamp(evklidStampPath);
-            loadSign(evklidSignPath);
+            loadStampAndSign(evklidStampPath, evklidSignPath);
         });
         spelsButton.addActionListener(e -> {
-            loadStamp(spelsStampPath);
-            loadSign(spelsSignPath);
+            loadStampAndSign(spelsStampPath, spelsSignPath);
         });
 
         buttonPanel.add(evklidButton);
@@ -123,24 +124,24 @@ public class ImageOverlayApp extends JFrame {
     }
 
 
-    private void loadStamp(String stampPath) {
-        try {
-            rightClickImage = ImageIO.read(getClass().getResource(stampPath));
-            imagePanel.repaint();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error loading stamp image.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
+    private void initializeUI() throws IOException {
+        setTitle("Stamper");
+        setSize(1000, 650);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setIconImage(ImageIO.read(getClass().getResource("/images/icon.PNG")));
+
+
     }
 
 
-    private void loadSign(String signPath) {
+    private void loadStampAndSign(String stampPath, String signPath) {
         try {
-            leftClickImage = ImageIO.read(getClass().getResource(signPath));
+            rightClickImage = imageLoader.loadImage(stampPath);
+            leftClickImage = imageLoader.loadImage(signPath);
             imagePanel.repaint();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error loading stamp image.", "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Error loading images.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -152,7 +153,7 @@ public class ImageOverlayApp extends JFrame {
             File selectedFile = fileChooser.getSelectedFile();
             if (selectedFile != null && selectedFile.getName().toLowerCase().endsWith(".pdf")) {
                 System.out.println("Это PDF файл.");
-                selectedFile = FileConverter.pdfToJpg(selectedFile);
+                selectedFile = fileConverter.pdfToJpg(selectedFile);
             } else if (selectedFile != null && selectedFile.getName().toLowerCase().endsWith(".docx")) {
                 System.out.println("Это DOCX файл.");
             }
@@ -254,6 +255,5 @@ public class ImageOverlayApp extends JFrame {
     }
 }
 
-//TODO:
+// TODO:
 // добавить расширение при сохранении;
-// конвертировать jpg в pdf;
