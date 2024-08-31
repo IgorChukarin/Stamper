@@ -171,10 +171,20 @@ public class ImageOverlayApp extends JFrame {
             BufferedImage resultImage = new BufferedImage(documentImage.getWidth(), documentImage.getHeight(), BufferedImage.TYPE_INT_RGB);
             recalculateImage(resultImage);
             JFileChooser fileChooser = new JFileChooser();
+
+            // Установка имени файла по умолчанию с расширением .pdf
+            fileChooser.setSelectedFile(new File("document.pdf"));
+
             int returnValue = fileChooser.showSaveDialog(this);
 
             if (returnValue == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
+
+                // Проверка и добавление расширения .pdf, если его нет
+                if (!file.getName().toLowerCase().endsWith(".pdf")) {
+                    file = new File(file.getAbsolutePath() + ".pdf");
+                }
+
                 FileConverter.saveImageAsPDF(resultImage, file);
                 JOptionPane.showMessageDialog(this, "Image saved successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
             }
@@ -249,5 +259,3 @@ public class ImageOverlayApp extends JFrame {
 
 // TODO:
 // контролировать разрешение файла;
-// исправить случчайное созадние файла;
-// добавить расширение при сохранении;
