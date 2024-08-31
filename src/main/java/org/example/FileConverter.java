@@ -1,10 +1,6 @@
 package org.example;
 
-import com.itextpdf.io.image.ImageData;
-import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.io.source.ByteArrayOutputStream;
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfWriter;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -19,7 +15,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class FileConverter {
-    public File pdfToJpg(File pdfFile) {
+    public BufferedImage pdfToBufferedImage(File pdfFile) {
         if (pdfFile == null || !pdfFile.exists()) {
             throw new IllegalArgumentException("Файл не существует или неверно указан путь.");
         }
@@ -34,10 +30,8 @@ public class FileConverter {
             File jpgFile = new File(pdfFile.getParent(), pdfFile.getName().replace(".pdf", ".jpg"));
 
             // Конвертация первой страницы в изображение (если нужно все страницы, используйте цикл)
-            BufferedImage bim = pdfRenderer.renderImageWithDPI(0, 300, ImageType.RGB);
-            ImageIO.write(bim, "jpg", jpgFile);
-
-            return jpgFile;
+            BufferedImage bufferedImage = pdfRenderer.renderImageWithDPI(0, 300, ImageType.RGB);
+            return bufferedImage;
         } catch (IOException e) {
             e.printStackTrace();
             return null;

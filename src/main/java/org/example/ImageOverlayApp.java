@@ -23,7 +23,7 @@ public class ImageOverlayApp extends JFrame {
     private String evklidStampPath = "/images/evklid/stamp.PNG";
     private String spelsSignPath = "/images/spels/sign.PNG";
     private String spelsStampPath = "/images/spels/stamp.PNG";
-    
+
     private ImageLoader imageLoader;
     private FileConverter fileConverter;
 
@@ -130,8 +130,6 @@ public class ImageOverlayApp extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setIconImage(ImageIO.read(getClass().getResource("/images/icon.PNG")));
-
-
     }
 
 
@@ -153,19 +151,13 @@ public class ImageOverlayApp extends JFrame {
             File selectedFile = fileChooser.getSelectedFile();
             if (selectedFile != null && selectedFile.getName().toLowerCase().endsWith(".pdf")) {
                 System.out.println("Это PDF файл.");
-                selectedFile = fileConverter.pdfToJpg(selectedFile);
+                documentImage = fileConverter.pdfToBufferedImage(selectedFile);
             } else if (selectedFile != null && selectedFile.getName().toLowerCase().endsWith(".docx")) {
                 System.out.println("Это DOCX файл.");
             }
-            try {
-                Point currentLocation = getLocation();
-                documentImage = ImageIO.read(selectedFile);
-                imagePanel.repaint();
-                setLocation(currentLocation);
-            } catch (IOException ex) {
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Error loading image.", "Error", JOptionPane.ERROR_MESSAGE);
-            }
+            Point currentLocation = getLocation();
+            imagePanel.repaint();
+            setLocation(currentLocation);
         }
     }
 
@@ -256,4 +248,6 @@ public class ImageOverlayApp extends JFrame {
 }
 
 // TODO:
+// контролировать разрешение файла;
+// исправить случчайное созадние файла;
 // добавить расширение при сохранении;
