@@ -9,7 +9,11 @@ import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
+import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageOutputStream;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -47,32 +51,34 @@ public class FileConverter {
     }
 
     public static void saveImageAsPDF(BufferedImage image, File outputPdfFile) throws IOException {
-        // Создаем новый PDF-документ
         PDDocument document = new PDDocument();
-
-        // Создаем страницу с размерами изображения
         PDPage page = new PDPage(new PDRectangle(image.getWidth(), image.getHeight()));
         document.addPage(page);
 
-        // Преобразуем BufferedImage в PDImageXObject
         PDImageXObject pdImage = PDImageXObject.createFromByteArray(document, convertBufferedImageToBytes(image), "image");
 
-        // Рисуем изображение на странице
         try (PDPageContentStream contentStream = new PDPageContentStream(document, page, PDPageContentStream.AppendMode.OVERWRITE, true)) {
             contentStream.drawImage(pdImage, 0, 0, image.getWidth(), image.getHeight());
         }
 
-        // Сохраняем документ в файл
         document.save(outputPdfFile);
 
-        // Закрываем документ
         document.close();
     }
 
     // Вспомогательный метод для конвертации BufferedImage в байтовый массив
     private static byte[] convertBufferedImageToBytes(BufferedImage image) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(image, "png", baos); // Вы можете использовать другой формат, если необходимо
+        ImageWriter writer = ImageIO.getImageWritersByFormatName("jpg").next();
+        ImageOutputStream ios = ImageIO.createImageOutputStream(baos);
+        writer.setOutput(ios);
+
+        ImageWriteParam param = writer.getDefaultWriteParam();
+        param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+        param.setCompressionQuality(0.5f); // Задаем уровень компрессии (0.75 - компрессия, 1.0 - без компрессии)
+
+        writer.write(null, new IIOImage(image, null, null), param);
+        writer.dispose();
         return baos.toByteArray();
     }
 }

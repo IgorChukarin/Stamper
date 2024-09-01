@@ -186,11 +186,11 @@ public class ImageOverlayApp extends JFrame {
                 }
 
                 FileConverter.saveImageAsPDF(resultImage, file);
-                JOptionPane.showMessageDialog(this, "Image saved successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Файл сохранен.", "Success", JOptionPane.INFORMATION_MESSAGE);
             }
         } catch (IOException ex) {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error saving image.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Не удалось сохранить файл.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -258,4 +258,4 @@ public class ImageOverlayApp extends JFrame {
 }
 
 // TODO:
-// контролировать разрешение файла;
+// разобраться с растровой и веторной графикой
