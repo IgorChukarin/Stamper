@@ -19,10 +19,10 @@ public class ImageOverlayApp extends JFrame {
     private Point rightClickPosition;
     private JPanel imagePanel;
 
-    private String evklidSignPath = "/images/evklid/sign.PNG";
-    private String evklidStampPath = "/images/evklid/stamp.PNG";
-    private String spelsSignPath = "/images/spels/sign.PNG";
-    private String spelsStampPath = "/images/spels/stamp.PNG";
+    private static final String EVKLID_SIGN_PATH = "/images/evklid/sign.PNG";
+    private static final String EVKLID_STAMP_PATH = "/images/evklid/stamp.PNG";
+    private static final String SPELS_SIGN_PATH = "/images/spels/sign.PNG";
+    private static final String SPELS_STAMP_PATH = "/images/spels/stamp.PNG";
 
     private ImageLoader imageLoader;
     private FileConverter fileConverter;
@@ -32,11 +32,10 @@ public class ImageOverlayApp extends JFrame {
         imageLoader = new ImageLoader();
         fileConverter = new FileConverter();
         initializeUI();
+        initializeImages();
+        initializeMenu();
+        initializeButtons();
 
-        leftClickImage = ImageIO.read(getClass().getResource(evklidSignPath));
-        rightClickImage = ImageIO.read(getClass().getResource(evklidStampPath));
-        leftClickPosition = new Point(-1, -1);
-        rightClickPosition = new Point(-1, -1);
 
         imagePanel = new JPanel() {
             @Override
@@ -91,36 +90,7 @@ public class ImageOverlayApp extends JFrame {
                 imagePanel.repaint();
             }
         });
-
-        JMenuBar menuBar = new JMenuBar();
-        JMenu fileMenu = new JMenu("Файл");
-        JMenuItem openMenuItem = new JMenuItem("Открыть");
-        JMenuItem saveMenuItem = new JMenuItem("Сохранить");
-        openMenuItem.addActionListener(e -> openImage());
-        saveMenuItem.addActionListener(e -> saveImage());
-
-        fileMenu.add(openMenuItem);
-        fileMenu.add(saveMenuItem);
-        menuBar.add(fileMenu);
-        setJMenuBar(menuBar);
-
-        JPanel buttonPanel = new JPanel();
-        JButton evklidButton = new JButton("Evklid");
-        JButton spelsButton = new JButton("Spels");
-
-        evklidButton.addActionListener(e -> {
-            loadStampAndSign(evklidStampPath, evklidSignPath);
-        });
-        spelsButton.addActionListener(e -> {
-            loadStampAndSign(spelsStampPath, spelsSignPath);
-        });
-
-        buttonPanel.add(evklidButton);
-        buttonPanel.add(spelsButton);
-
         add(imagePanel, BorderLayout.CENTER);
-        add(buttonPanel, BorderLayout.SOUTH);
-
     }
 
 
@@ -130,6 +100,44 @@ public class ImageOverlayApp extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setIconImage(ImageIO.read(getClass().getResource("/images/icon.PNG")));
+    }
+
+
+    private void initializeImages() throws IOException {
+        leftClickImage = ImageIO.read(getClass().getResource(EVKLID_SIGN_PATH));
+        rightClickImage = ImageIO.read(getClass().getResource(EVKLID_STAMP_PATH));
+        leftClickPosition = new Point(-1, -1);
+        rightClickPosition = new Point(-1, -1);
+    }
+
+
+    private void initializeMenu() throws IOException {
+        JMenuBar menuBar = new JMenuBar();
+        JMenu fileMenu = new JMenu("Файл");
+        JMenuItem openMenuItem = new JMenuItem("Открыть");
+        JMenuItem saveMenuItem = new JMenuItem("Сохранить");
+
+        openMenuItem.addActionListener(e -> openFile());
+        saveMenuItem.addActionListener(e -> saveFile());
+
+        fileMenu.add(openMenuItem);
+        fileMenu.add(saveMenuItem);
+        menuBar.add(fileMenu);
+        setJMenuBar(menuBar);
+    }
+
+
+    private void initializeButtons() {
+        JPanel buttonPanel = new JPanel();
+        JButton evklidButton = new JButton("Evklid");
+        JButton spelsButton = new JButton("Spels");
+
+        evklidButton.addActionListener(e -> loadStampAndSign(EVKLID_STAMP_PATH, EVKLID_SIGN_PATH));
+        spelsButton.addActionListener(e -> loadStampAndSign(SPELS_STAMP_PATH, SPELS_SIGN_PATH));
+
+        buttonPanel.add(evklidButton);
+        buttonPanel.add(spelsButton);
+        add(buttonPanel, BorderLayout.SOUTH);
     }
 
 
@@ -144,7 +152,7 @@ public class ImageOverlayApp extends JFrame {
     }
 
 
-    private void openImage() {
+    private void openFile() {
         JFileChooser fileChooser = new JFileChooser(FileSystemView.getFileSystemView());
         int returnValue = fileChooser.showOpenDialog(this);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
@@ -162,7 +170,7 @@ public class ImageOverlayApp extends JFrame {
     }
 
 
-    private void saveImage() {
+    private void saveFile() {
         if (documentImage == null) {
             JOptionPane.showMessageDialog(this, "Документ не выбран", "Error", JOptionPane.ERROR_MESSAGE);
             return;
@@ -171,20 +179,13 @@ public class ImageOverlayApp extends JFrame {
             BufferedImage resultImage = new BufferedImage(documentImage.getWidth(), documentImage.getHeight(), BufferedImage.TYPE_INT_RGB);
             recalculateImage(resultImage);
             JFileChooser fileChooser = new JFileChooser();
-
-            // Установка имени файла по умолчанию с расширением .pdf
             fileChooser.setSelectedFile(new File("document.pdf"));
-
             int returnValue = fileChooser.showSaveDialog(this);
-
             if (returnValue == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
-
-                // Проверка и добавление расширения .pdf, если его нет
                 if (!file.getName().toLowerCase().endsWith(".pdf")) {
                     file = new File(file.getAbsolutePath() + ".pdf");
                 }
-
                 FileConverter.saveImageAsPDF(resultImage, file);
                 JOptionPane.showMessageDialog(this, "Файл сохранен.", "Success", JOptionPane.INFORMATION_MESSAGE);
             }
@@ -259,3 +260,4 @@ public class ImageOverlayApp extends JFrame {
 
 // TODO:
 // разобраться с растровой и веторной графикой
+// добавить word to pdf converter
