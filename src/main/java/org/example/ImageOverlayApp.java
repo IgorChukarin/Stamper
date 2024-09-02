@@ -159,9 +159,10 @@ public class ImageOverlayApp extends JFrame {
             File selectedFile = fileChooser.getSelectedFile();
             if (selectedFile != null && selectedFile.getName().toLowerCase().endsWith(".pdf")) {
                 System.out.println("Это PDF файл.");
-                documentImage = fileConverter.pdfToBufferedImage(selectedFile);
+                documentImage = fileConverter.pdfToImage(selectedFile);
             } else if (selectedFile != null && selectedFile.getName().toLowerCase().endsWith(".docx")) {
                 System.out.println("Это DOCX файл.");
+                documentImage = fileConverter.docxToImage(selectedFile);
             }
             Point currentLocation = getLocation();
             imagePanel.repaint();
@@ -260,4 +261,4 @@ public class ImageOverlayApp extends JFrame {
 
 // TODO:
 // разобраться с растровой и веторной графикой
-// добавить word to pdf converter
+// стрелочки по бокам для пролистывания многостраничных файлов

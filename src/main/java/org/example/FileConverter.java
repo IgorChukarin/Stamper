@@ -1,6 +1,7 @@
 package org.example;
 
 import com.itextpdf.io.source.ByteArrayOutputStream;
+import com.spire.doc.Document;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -8,6 +9,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
+
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
@@ -19,21 +21,15 @@ import java.io.File;
 import java.io.IOException;
 
 public class FileConverter {
-    public BufferedImage pdfToBufferedImage(File pdfFile) {
+    public BufferedImage pdfToImage(File pdfFile) {
         if (pdfFile == null || !pdfFile.exists()) {
             throw new IllegalArgumentException("Файл не существует или неверно указан путь.");
         }
-
         PDDocument document = null;
         try {
             document = PDDocument.load(pdfFile);
             PDFRenderer pdfRenderer = new PDFRenderer(document);
-            int pageCount = document.getNumberOfPages();
-
-            // Создаем выходной файл (для первой страницы)
-            File jpgFile = new File(pdfFile.getParent(), pdfFile.getName().replace(".pdf", ".jpg"));
-
-            // Конвертация первой страницы в изображение (если нужно все страницы, используйте цикл)
+            //int pageCount = document.getNumberOfPages();
             BufferedImage bufferedImage = pdfRenderer.renderImageWithDPI(0, 300, ImageType.RGB);
             return bufferedImage;
         } catch (IOException e) {
@@ -49,6 +45,15 @@ public class FileConverter {
             }
         }
     }
+
+
+    public BufferedImage docxToImage (File docxFile) {
+        Document document = new Document();
+        document.loadFromFile(docxFile.getAbsolutePath());
+        BufferedImage[] image= document.saveToImages(0, 1, com.spire.doc.documents.ImageType.Bitmap, 300, 300);
+        return image[0];
+    }
+
 
     public static void saveImageAsPDF(BufferedImage image, File outputPdfFile) throws IOException {
         PDDocument document = new PDDocument();
