@@ -158,15 +158,12 @@ public class ImageOverlayApp extends JFrame {
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
             if (selectedFile != null && selectedFile.getName().toLowerCase().endsWith(".pdf")) {
-                System.out.println("Это PDF файл.");
                 documentImage = fileConverter.pdfToImage(selectedFile);
             } else if (selectedFile != null && selectedFile.getName().toLowerCase().endsWith(".docx")) {
-                System.out.println("Это DOCX файл.");
                 documentImage = fileConverter.docxToImage(selectedFile);
             }
-            Point currentLocation = getLocation();
             imagePanel.repaint();
-            setLocation(currentLocation);
+            setLocation(getLocation());
         }
     }
 

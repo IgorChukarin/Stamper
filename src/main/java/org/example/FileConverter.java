@@ -7,7 +7,6 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
-import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
 
@@ -21,28 +20,15 @@ import java.io.File;
 import java.io.IOException;
 
 public class FileConverter {
+
+
     public BufferedImage pdfToImage(File pdfFile) {
-        if (pdfFile == null || !pdfFile.exists()) {
-            throw new IllegalArgumentException("Файл не существует или неверно указан путь.");
-        }
-        PDDocument document = null;
-        try {
-            document = PDDocument.load(pdfFile);
+        try (PDDocument document = PDDocument.load(pdfFile)) {
             PDFRenderer pdfRenderer = new PDFRenderer(document);
-            //int pageCount = document.getNumberOfPages();
-            BufferedImage bufferedImage = pdfRenderer.renderImageWithDPI(0, 300, ImageType.RGB);
-            return bufferedImage;
+            return pdfRenderer.renderImageWithDPI(0, 300, org.apache.pdfbox.rendering.ImageType.RGB);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
-        } finally {
-            if (document != null) {
-                try {
-                    document.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 
