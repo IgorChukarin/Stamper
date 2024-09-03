@@ -2,6 +2,8 @@ package org.example;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -16,10 +18,47 @@ public class ImagePanel extends JPanel {
     public ImagePanel() {
         this.leftClickPosition = new Point(-1, -1);
         this.rightClickPosition = new Point(-1, -1);
+
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                handleMouseClick(e);
+                // Получаем текущие размеры панели и документа
+                int panelWidth = getWidth();
+                int panelHeight = getHeight();
+                BufferedImage documentImage = getDocumentImage();
+
+                if (documentImage == null) return;
+
+                double imageAspectRatio = (double) documentImage.getWidth() / documentImage.getHeight();
+                double panelAspectRatio = (double) panelWidth / panelHeight;
+
+                int drawWidth, drawHeight;
+                int drawX = 0, drawY = 0;
+
+                if (imageAspectRatio > panelAspectRatio) {
+                    drawWidth = panelWidth;
+                    drawHeight = (int) (panelWidth / imageAspectRatio);
+                    drawY = (panelHeight - drawHeight) / 2;
+                } else {
+                    drawHeight = panelHeight;
+                    drawWidth = (int) (panelHeight * imageAspectRatio);
+                    drawX = (panelWidth - drawWidth) / 2;
+                }
+
+                int mouseX = e.getX();
+                int mouseY = e.getY();
+
+                // Проверяем, находится ли клик внутри области документа
+                if (mouseX >= drawX && mouseX <= drawX + drawWidth &&
+                        mouseY >= drawY && mouseY <= drawY + drawHeight) {
+                    // Если кликнутый пункт находится в области документа, обновляем координаты
+                    if (SwingUtilities.isLeftMouseButton(e)) {
+                        leftClickPosition.setLocation(mouseX, mouseY);
+                    } else if (SwingUtilities.isRightMouseButton(e)) {
+                        rightClickPosition.setLocation(mouseX, mouseY);
+                    }
+                    repaint();
+                }
             }
         });
     }

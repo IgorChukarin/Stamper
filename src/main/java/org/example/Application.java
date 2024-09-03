@@ -2,6 +2,8 @@ package org.example;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -10,13 +12,12 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.filechooser.FileSystemView;
 
-public class ImageOverlayApp extends JFrame {
+public class Application extends JFrame {
 
     private BufferedImage leftClickImage;
     private BufferedImage rightClickImage;
     private Point leftClickPosition;
     private Point rightClickPosition;
-    private ImagePanel imagePanel;
 
     private static final String EVKLID_SIGN_PATH = "/images/evklid/sign.PNG";
     private static final String EVKLID_STAMP_PATH = "/images/evklid/stamp.PNG";
@@ -25,23 +26,24 @@ public class ImageOverlayApp extends JFrame {
 
     private ImageLoader imageLoader;
     private FileConverter fileConverter;
+    private ImagePanel imagePanel;
 
 
-    public ImageOverlayApp() throws IOException {
+    public Application() throws IOException {
         imageLoader = new ImageLoader();
         fileConverter = new FileConverter();
         initializeUI();
-        initializeMenu();
+        initializeMenuBar();
         initializeImagePanel();
-        initializeButtons();
         initializeImages();
+        initializeButtons();
     }
 
 
     private void initializeImagePanel() {
         imagePanel = new ImagePanel();
         add(imagePanel, BorderLayout.CENTER);
-
+        
         imagePanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -62,8 +64,6 @@ public class ImageOverlayApp extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setIconImage(ImageIO.read(getClass().getResource("/images/icon.PNG")));
-
-
     }
 
 
@@ -77,7 +77,7 @@ public class ImageOverlayApp extends JFrame {
     }
 
 
-    private void initializeMenu() throws IOException {
+    private void initializeMenuBar() throws IOException {
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("Файл");
         JMenuItem openMenuItem = new JMenuItem("Открыть");
@@ -221,7 +221,7 @@ public class ImageOverlayApp extends JFrame {
 
         SwingUtilities.invokeLater(() -> {
             try {
-                new ImageOverlayApp().setVisible(true);
+                new Application().setVisible(true);
             } catch (IOException e) {
                 e.printStackTrace();
                 System.err.println("Error initializing application.");
@@ -234,4 +234,3 @@ public class ImageOverlayApp extends JFrame {
 // разобраться с растровой и векторной графикой
 // стрелочки по бокам для пролистывания многостраничных файлов
 // избавиться от перемещения печатей при сжатии окна
-// не отрисовывать печати за пределами файла
