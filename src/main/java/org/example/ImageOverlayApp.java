@@ -12,12 +12,11 @@ import javax.swing.filechooser.FileSystemView;
 
 public class ImageOverlayApp extends JFrame {
 
-    private BufferedImage documentImage;
     private BufferedImage leftClickImage;
     private BufferedImage rightClickImage;
     private Point leftClickPosition;
     private Point rightClickPosition;
-    private JPanel imagePanel;
+    private ImagePanel imagePanel;
 
     private static final String EVKLID_SIGN_PATH = "/images/evklid/sign.PNG";
     private static final String EVKLID_STAMP_PATH = "/images/evklid/stamp.PNG";
@@ -32,52 +31,16 @@ public class ImageOverlayApp extends JFrame {
         imageLoader = new ImageLoader();
         fileConverter = new FileConverter();
         initializeUI();
-        initializeImages();
         initializeMenu();
+        initializeImagePanel();
         initializeButtons();
+        initializeImages();
+    }
 
 
-        imagePanel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                if (documentImage != null) {
-
-                    int panelWidth = getWidth();
-                    int panelHeight = getHeight();
-
-                    double imageAspectRatio = (double) documentImage.getWidth() / documentImage.getHeight();
-                    double panelAspectRatio = (double) panelWidth / panelHeight;
-
-                    int drawWidth, drawHeight;
-                    int drawX = 0, drawY = 0;
-                    if (imageAspectRatio > panelAspectRatio) {
-                        drawWidth = panelWidth;
-                        drawHeight = (int) (panelWidth / imageAspectRatio);
-                        drawY = (panelHeight - drawHeight) / 2;
-                    } else {
-                        drawHeight = panelHeight;
-                        drawWidth = (int) (panelHeight * imageAspectRatio);
-                        drawX = (panelWidth - drawWidth) / 2;
-                    }
-                    g.drawImage(documentImage, drawX, drawY, drawWidth, drawHeight, this);
-
-                    double scaleFactor = setScaleFactor(imageAspectRatio);
-                    int overlayWidth = (int) (drawHeight * scaleFactor);
-                    int overlayHeight = overlayWidth;
-                    if (leftClickPosition.x >= 0 && leftClickPosition.y >= 0) {
-                        int x = leftClickPosition.x - (overlayWidth / 2);
-                        int y = leftClickPosition.y - (overlayHeight / 2);
-                        g.drawImage(leftClickImage, x, y, overlayWidth, overlayHeight, this);
-                    }
-                    if (rightClickPosition.x >= 0 && rightClickPosition.y >= 0) {
-                        int x = rightClickPosition.x - (overlayWidth / 2);
-                        int y = rightClickPosition.y - (overlayHeight / 2);
-                        g.drawImage(rightClickImage, x, y, overlayWidth, overlayHeight, this);
-                    }
-                }
-            }
-        };
+    private void initializeImagePanel() {
+        imagePanel = new ImagePanel();
+        add(imagePanel, BorderLayout.CENTER);
 
         imagePanel.addMouseListener(new MouseAdapter() {
             @Override
@@ -90,7 +53,6 @@ public class ImageOverlayApp extends JFrame {
                 imagePanel.repaint();
             }
         });
-        add(imagePanel, BorderLayout.CENTER);
     }
 
 
@@ -100,14 +62,18 @@ public class ImageOverlayApp extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setIconImage(ImageIO.read(getClass().getResource("/images/icon.PNG")));
+
+
     }
 
 
     private void initializeImages() throws IOException {
+        rightClickPosition = new Point(-1, -1);
+        leftClickPosition = new Point(-1, -1);
         leftClickImage = ImageIO.read(getClass().getResource(EVKLID_SIGN_PATH));
         rightClickImage = ImageIO.read(getClass().getResource(EVKLID_STAMP_PATH));
-        leftClickPosition = new Point(-1, -1);
-        rightClickPosition = new Point(-1, -1);
+        imagePanel.setLeftClickImage(leftClickImage);
+        imagePanel.setRightClickImage(rightClickImage);
     }
 
 
@@ -129,8 +95,8 @@ public class ImageOverlayApp extends JFrame {
 
     private void initializeButtons() {
         JPanel buttonPanel = new JPanel();
-        JButton evklidButton = new JButton("Evklid");
-        JButton spelsButton = new JButton("Spels");
+        JButton evklidButton = new JButton("Евклид");
+        JButton spelsButton = new JButton("Спелс");
 
         evklidButton.addActionListener(e -> loadStampAndSign(EVKLID_STAMP_PATH, EVKLID_SIGN_PATH));
         spelsButton.addActionListener(e -> loadStampAndSign(SPELS_STAMP_PATH, SPELS_SIGN_PATH));
@@ -145,6 +111,8 @@ public class ImageOverlayApp extends JFrame {
         try {
             rightClickImage = imageLoader.loadImage(stampPath);
             leftClickImage = imageLoader.loadImage(signPath);
+            imagePanel.setRightClickImage(rightClickImage);
+            imagePanel.setLeftClickImage(leftClickImage);
             imagePanel.repaint();
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, "Error loading images.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -155,13 +123,17 @@ public class ImageOverlayApp extends JFrame {
     private void openFile() {
         JFileChooser fileChooser = new JFileChooser(FileSystemView.getFileSystemView());
         int returnValue = fileChooser.showOpenDialog(this);
+        BufferedImage documentImage = null;
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
             if (selectedFile != null && selectedFile.getName().toLowerCase().endsWith(".pdf")) {
                 documentImage = fileConverter.pdfToImage(selectedFile);
             } else if (selectedFile != null && selectedFile.getName().toLowerCase().endsWith(".docx")) {
                 documentImage = fileConverter.docxToImage(selectedFile);
+            } else if (selectedFile != null && selectedFile.getName().toLowerCase().endsWith(".xlsx")) {
+                System.out.println("this is xlsx file");
             }
+            imagePanel.setDocumentImage(documentImage);
             imagePanel.repaint();
             setLocation(getLocation());
         }
@@ -169,6 +141,7 @@ public class ImageOverlayApp extends JFrame {
 
 
     private void saveFile() {
+        BufferedImage documentImage = imagePanel.getDocumentImage();
         if (documentImage == null) {
             JOptionPane.showMessageDialog(this, "Документ не выбран", "Error", JOptionPane.ERROR_MESSAGE);
             return;
@@ -195,6 +168,7 @@ public class ImageOverlayApp extends JFrame {
 
 
     private void recalculateImage(BufferedImage resultImage) {
+        BufferedImage documentImage = imagePanel.getDocumentImage();
         Graphics2D g2d = resultImage.createGraphics();
         g2d.drawImage(documentImage, 0, 0, null);
 
@@ -257,5 +231,7 @@ public class ImageOverlayApp extends JFrame {
 }
 
 // TODO:
-// разобраться с растровой и веторной графикой
+// разобраться с растровой и векторной графикой
 // стрелочки по бокам для пролистывания многостраничных файлов
+// избавиться от перемещения печатей при сжатии окна
+// не отрисовывать печати за пределами файла

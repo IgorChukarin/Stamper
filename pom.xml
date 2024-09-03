@@ -21,6 +21,7 @@
             <url>https://repo.e-iceblue.com/nexus/content/groups/public/</url>
         </repository>
     </repositories>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
@@ -66,7 +67,5 @@
             </plugin>
         </plugins>
     </build>
-
-
 
 </project>

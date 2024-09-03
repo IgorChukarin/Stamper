@@ -16,7 +16,6 @@ public class ImagePanel extends JPanel {
     public ImagePanel() {
         this.leftClickPosition = new Point(-1, -1);
         this.rightClickPosition = new Point(-1, -1);
-
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -25,6 +24,9 @@ public class ImagePanel extends JPanel {
         });
     }
 
+    public BufferedImage getDocumentImage() {
+        return documentImage;
+    }
 
     public void setDocumentImage(BufferedImage documentImage) {
         this.documentImage = documentImage;
@@ -47,7 +49,7 @@ public class ImagePanel extends JPanel {
         super.paintComponent(g);
         if (documentImage != null) {
             drawDocument(g);
-            drawOverlays(g);
+            drawStampAndSign(g);
         }
     }
 
@@ -74,7 +76,7 @@ public class ImagePanel extends JPanel {
     }
 
 
-    private void drawOverlays(Graphics g) {
+    private void drawStampAndSign(Graphics g) {
         double imageAspectRatio = (double) documentImage.getWidth() / documentImage.getHeight();
         double scaleFactor = setScaleFactor(imageAspectRatio);
         int overlayWidth = (int) (getHeight() * scaleFactor); //diff
