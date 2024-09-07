@@ -157,7 +157,7 @@ public class Application extends JFrame {
                 if (!file.getName().toLowerCase().endsWith(".pdf")) {
                     file = new File(file.getAbsolutePath() + ".pdf");
                 }
-                FileConverter.saveImageAsPDF(resultImage, file);
+                SaveService.saveImageAsPDF(resultImage, file);
                 JOptionPane.showMessageDialog(this, "Файл сохранен.", "Success", JOptionPane.INFORMATION_MESSAGE);
             }
         } catch (IOException ex) {
