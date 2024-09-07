@@ -128,6 +128,7 @@ public class Application extends JFrame {
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
             oldFileName = selectedFile.getName();
+            imagePanel.setFileName(oldFileName);
             if (selectedFile != null && selectedFile.getName().toLowerCase().endsWith(".pdf")) {
                 documentImage = PdfConverter.pdfToImage(selectedFile);
             } else if (selectedFile != null && selectedFile.getName().toLowerCase().endsWith(".docx")) {
@@ -209,6 +210,12 @@ public class Application extends JFrame {
             int x = (rightClickPosition.x - drawX) * documentImage.getWidth() / drawWidth - (overlayWidth / 2);
             int y = (rightClickPosition.y - drawY) * documentImage.getHeight() / drawHeight - (overlayHeight / 2);
             g2d.drawImage(rightClickImage, x, y, overlayWidth, overlayHeight, null);
+        }
+        if (oldFileName.endsWith(".xlsx")) {
+            int rectWidth = documentImage.getWidth();
+            int rectHeight = 25;
+            g2d.setColor(Color.WHITE);
+            g2d.fillRect(0, 0, rectWidth, rectHeight);
         }
         g2d.dispose();
     }

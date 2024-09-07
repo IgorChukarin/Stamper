@@ -10,11 +10,13 @@ import java.awt.image.BufferedImage;
 
 public class ImagePanel extends JPanel {
     private BufferedImage documentImage;
+    private String fileName;
+
     private BufferedImage leftClickImage;
+
     private BufferedImage rightClickImage;
     private Point leftClickPosition;
     private Point rightClickPosition;
-
     public ImagePanel() {
         this.leftClickPosition = new Point(-1, -1);
         this.rightClickPosition = new Point(-1, -1);
@@ -112,6 +114,12 @@ public class ImagePanel extends JPanel {
             drawX = (panelWidth - drawWidth) / 2;
         }
         g.drawImage(documentImage, drawX, drawY, drawWidth, drawHeight, this);
+        if (fileName.endsWith(".xlsx")) {
+            int rectWidth = drawWidth;
+            int rectHeight = 10;
+            g.setColor(Color.white);
+            g.fillRect(drawX, drawY, rectWidth, rectHeight);
+        }
     }
 
 
@@ -145,5 +153,9 @@ public class ImagePanel extends JPanel {
             rightClickPosition.setLocation(e.getPoint());
         }
         repaint();
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 }
