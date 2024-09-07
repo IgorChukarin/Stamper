@@ -2,6 +2,7 @@ package org.example;
 
 import org.example.converters.DocxConverter;
 import org.example.converters.PdfConverter;
+import org.example.converters.XlsxConverter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -132,7 +133,7 @@ public class Application extends JFrame {
             } else if (selectedFile != null && selectedFile.getName().toLowerCase().endsWith(".docx")) {
                 documentImage = DocxConverter.docxToImage(selectedFile);
             } else if (selectedFile != null && selectedFile.getName().toLowerCase().endsWith(".xlsx")) {
-                System.out.println("this is xlsx file");
+                documentImage = XlsxConverter.xlsxToImage(selectedFile);
             }
             imagePanel.setDocumentImage(documentImage);
             imagePanel.repaint();
