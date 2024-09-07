@@ -2,8 +2,6 @@ package org.example;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -18,6 +16,7 @@ public class Application extends JFrame {
     private BufferedImage rightClickImage;
     private Point leftClickPosition;
     private Point rightClickPosition;
+    private String oldFileName;
 
     private static final String EVKLID_SIGN_PATH = "/images/evklid/sign.PNG";
     private static final String EVKLID_STAMP_PATH = "/images/evklid/stamp.PNG";
@@ -126,6 +125,7 @@ public class Application extends JFrame {
         BufferedImage documentImage = null;
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
+            oldFileName = selectedFile.getName();
             if (selectedFile != null && selectedFile.getName().toLowerCase().endsWith(".pdf")) {
                 documentImage = fileConverter.pdfToImage(selectedFile);
             } else if (selectedFile != null && selectedFile.getName().toLowerCase().endsWith(".docx")) {
@@ -150,7 +150,7 @@ public class Application extends JFrame {
             BufferedImage resultImage = new BufferedImage(documentImage.getWidth(), documentImage.getHeight(), BufferedImage.TYPE_INT_RGB);
             recalculateImage(resultImage);
             JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setSelectedFile(new File("document.pdf"));
+            fileChooser.setSelectedFile(new File(createFileName(oldFileName)));
             int returnValue = fileChooser.showSaveDialog(this);
             if (returnValue == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
@@ -164,6 +164,11 @@ public class Application extends JFrame {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Не удалось сохранить файл.", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+
+    private String createFileName(String oldName) {
+        return oldName.substring(0, oldName.indexOf(".")).concat("_signed.pdf");
     }
 
 
@@ -231,7 +236,7 @@ public class Application extends JFrame {
 }
 
 // TODO:
-// разобраться с растровой и векторной графикой
 // стрелочки по бокам для пролистывания многостраничных файлов
 // избавиться от перемещения печатей при сжатии окна
-// разобраться с масштобированием
+// добавить инфо
+// добавить xlsx
