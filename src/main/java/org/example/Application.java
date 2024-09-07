@@ -1,5 +1,8 @@
 package org.example;
 
+import org.example.converters.DocxConverter;
+import org.example.converters.PdfConverter;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -24,13 +27,11 @@ public class Application extends JFrame {
     private static final String SPELS_STAMP_PATH = "/images/spels/stamp.PNG";
 
     private ImageLoader imageLoader;
-    private FileConverter fileConverter;
     private ImagePanel imagePanel;
 
 
     public Application() throws IOException {
         imageLoader = new ImageLoader();
-        fileConverter = new FileConverter();
         initializeUI();
         initializeMenuBar();
         initializeImagePanel();
@@ -127,9 +128,9 @@ public class Application extends JFrame {
             File selectedFile = fileChooser.getSelectedFile();
             oldFileName = selectedFile.getName();
             if (selectedFile != null && selectedFile.getName().toLowerCase().endsWith(".pdf")) {
-                documentImage = fileConverter.pdfToImage(selectedFile);
+                documentImage = PdfConverter.pdfToImage(selectedFile);
             } else if (selectedFile != null && selectedFile.getName().toLowerCase().endsWith(".docx")) {
-                documentImage = fileConverter.docxToImage(selectedFile);
+                documentImage = DocxConverter.docxToImage(selectedFile);
             } else if (selectedFile != null && selectedFile.getName().toLowerCase().endsWith(".xlsx")) {
                 System.out.println("this is xlsx file");
             }
@@ -240,3 +241,4 @@ public class Application extends JFrame {
 // избавиться от перемещения печатей при сжатии окна
 // добавить инфо
 // добавить xlsx
+// поменять местами кнопки меню
