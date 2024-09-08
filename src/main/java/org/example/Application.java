@@ -81,16 +81,53 @@ public class Application extends JFrame {
     private void initializeMenuBar() throws IOException {
         JMenuBar menuBar = new JMenuBar();
         JMenu fileMenu = new JMenu("Файл");
-        JMenuItem openMenuItem = new JMenuItem("Открыть");
-        JMenuItem saveMenuItem = new JMenuItem("Сохранить");
+        JMenuItem openFileItem = new JMenuItem("Открыть");
+        JMenuItem saveFileItem = new JMenuItem("Сохранить");
+        JMenu infoMenu = new JMenu("Инфо");
+        JMenuItem aboutItem = new JMenuItem("О программе");
 
-        openMenuItem.addActionListener(e -> openFile());
-        saveMenuItem.addActionListener(e -> saveFile());
+        openFileItem.addActionListener(e -> openFile());
+        saveFileItem.addActionListener(e -> saveFile());
+        aboutItem.addActionListener(e -> showInfoDialog());
 
-        fileMenu.add(openMenuItem);
-        fileMenu.add(saveMenuItem);
+        fileMenu.add(openFileItem);
+        fileMenu.add(saveFileItem);
+        infoMenu.add(aboutItem);
         menuBar.add(fileMenu);
+        menuBar.add(infoMenu);
         setJMenuBar(menuBar);
+    }
+
+
+    private void showInfoDialog() {
+        // Создаем новое диалоговое окно для отображения изображения
+        JDialog infoDialog = new JDialog(this, "Информация", true);
+        infoDialog.setSize(765 * 80 / 100, 560 * 80 / 100);
+        infoDialog.setLocationRelativeTo(this);
+
+        // Загружаем изображение
+        try {
+            BufferedImage originalImage = ImageIO.read(getClass().getResource("/images/info.PNG"));
+
+            // Получаем размеры окна
+            int dialogWidth = infoDialog.getWidth();
+            int dialogHeight = infoDialog.getHeight();
+
+            // Масштабируем изображение до размеров окна
+            Image scaledImage = originalImage.getScaledInstance(dialogWidth, dialogHeight, Image.SCALE_SMOOTH);
+
+            // Создаем метку с измененным изображением
+            JLabel imageLabel = new JLabel(new ImageIcon(scaledImage));
+
+            // Добавляем изображение в окно
+            infoDialog.add(imageLabel);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Не удалось загрузить изображение.", "Ошибка", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Делаем окно видимым
+        infoDialog.setVisible(true);
     }
 
 
@@ -245,8 +282,6 @@ public class Application extends JFrame {
 }
 
 // TODO:
-// стрелочки по бокам для пролистывания многостраничных файлов
+// многостраничные файлы
 // избавиться от перемещения печатей при сжатии окна
-// добавить инфо
-// поменять местами кнопки меню
-// исправить создание файла xlsx
+// добавление своих печатей
