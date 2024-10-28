@@ -100,10 +100,10 @@ public class Application extends JFrame {
 
 
     private void showInfoDialog() {
-        // Создаем новое диалоговое окно для отображения изображения
-        JDialog infoDialog = new JDialog(this, "Информация", true);
-        infoDialog.setSize(765 * 80 / 100, 560 * 80 / 100);
+        JDialog infoDialog = new JDialog(this, "О программе", true);
+        infoDialog.setSize(765 * 90 / 100, 560 * 90 / 100);
         infoDialog.setLocationRelativeTo(this);
+        infoDialog.setResizable(false);
 
         // Загружаем изображение
         try {
