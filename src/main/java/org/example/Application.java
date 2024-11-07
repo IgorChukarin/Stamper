@@ -1,8 +1,6 @@
 package org.example;
 
-import org.example.converters.DocxConverter;
-import org.example.converters.PdfConverter;
-import org.example.converters.XlsxConverter;
+import org.example.converter.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -161,18 +159,13 @@ public class Application extends JFrame {
     private void openFile() {
         JFileChooser fileChooser = new JFileChooser(FileSystemView.getFileSystemView());
         int returnValue = fileChooser.showOpenDialog(this);
-        BufferedImage documentImage = null;
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
             oldFileName = selectedFile.getName();
             imagePanel.setFileName(oldFileName);
-            if (selectedFile != null && selectedFile.getName().toLowerCase().endsWith(".pdf")) {
-                documentImage = PdfConverter.pdfToImage(selectedFile);
-            } else if (selectedFile != null && selectedFile.getName().toLowerCase().endsWith(".docx")) {
-                documentImage = DocxConverter.docxToImage(selectedFile);
-            } else if (selectedFile != null && selectedFile.getName().toLowerCase().endsWith(".xlsx")) {
-                documentImage = XlsxConverter.xlsxToImage(selectedFile);
-            }
+
+            DocumentConverter converter = DocumentConverterFactory.getDocumentConverter(oldFileName);
+            BufferedImage documentImage = converter.convertToImage(selectedFile);
             imagePanel.setDocumentImage(documentImage);
             imagePanel.repaint();
             setLocation(getLocation());

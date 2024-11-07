@@ -1,4 +1,4 @@
-package org.example.converters;
+package org.example.converter;
 
 import com.aspose.cells.PdfSaveOptions;
 import com.aspose.cells.Workbook;
@@ -11,9 +11,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 
-public class XlsxConverter {
+public class XlsxConverter implements DocumentConverter{
 
-    public static BufferedImage xlsxToImage(File xlsxFile) {
+    @Override
+    public BufferedImage convertToImage(File xlsxFile) {
         File tempPdfFile = null;
         try {
 
@@ -34,7 +35,8 @@ public class XlsxConverter {
             PdfSaveOptions pdfSaveOptions = new PdfSaveOptions();
             newWorkbook.save(tempPdfFile.getAbsolutePath(), pdfSaveOptions);
 
-            return PdfConverter.pdfToImage(tempPdfFile);
+            PdfConverter pdfConverter = new PdfConverter();
+            return pdfConverter.convertToImage(tempPdfFile);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
