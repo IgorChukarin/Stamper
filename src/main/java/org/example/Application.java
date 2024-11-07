@@ -190,7 +190,7 @@ public class Application extends JFrame {
             BufferedImage resultImage = new BufferedImage(documentImage.getWidth(), documentImage.getHeight(), BufferedImage.TYPE_INT_RGB);
             recalculateImage(resultImage);
             JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setSelectedFile(new File(createFileName(oldFileName)));
+            fileChooser.setSelectedFile(new File(createResultFileName(oldFileName)));
             int returnValue = fileChooser.showSaveDialog(this);
             if (returnValue == JFileChooser.APPROVE_OPTION) {
                 File file = fileChooser.getSelectedFile();
@@ -207,7 +207,7 @@ public class Application extends JFrame {
     }
 
 
-    private String createFileName(String oldName) {
+    private String createResultFileName(String oldName) {
         return oldName.substring(0, oldName.indexOf(".")).concat("_signed.pdf");
     }
 
@@ -275,7 +275,6 @@ public class Application extends JFrame {
                 new Application().setVisible(true);
             } catch (IOException e) {
                 e.printStackTrace();
-                System.err.println("Error initializing application.");
             }
         });
     }
@@ -285,3 +284,4 @@ public class Application extends JFrame {
 // многостраничные файлы
 // избавиться от перемещения печатей при сжатии окна
 // добавление своих печатей
+// добавить factory для converters

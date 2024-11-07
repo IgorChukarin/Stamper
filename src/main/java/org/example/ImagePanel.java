@@ -13,10 +13,11 @@ public class ImagePanel extends JPanel {
     private String fileName;
 
     private BufferedImage leftClickImage;
-
     private BufferedImage rightClickImage;
+
     private Point leftClickPosition;
     private Point rightClickPosition;
+
     public ImagePanel() {
         this.leftClickPosition = new Point(-1, -1);
         this.rightClickPosition = new Point(-1, -1);
