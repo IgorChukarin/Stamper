@@ -6,6 +6,4 @@ module com.example.stamper {
 
     opens com.example.stamper to javafx.fxml;
     exports com.example.stamper;
-    exports org.example;
-    opens org.example to javafx.fxml;
 }
