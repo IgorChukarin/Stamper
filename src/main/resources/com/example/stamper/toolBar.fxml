@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ToolBar xmlns="http://javafx.com/javafx"
+            fx:id="toolBar"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.stamper.ToolBarController"
+            orientation="VERTICAL"
+            prefHeight="40.0">
+    <items>
+        <Button mnemonicParsing="false" text="Add" />
+    </items>
+
+</ToolBar>
