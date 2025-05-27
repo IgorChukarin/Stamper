@@ -33,4 +33,9 @@ public class ToolBarController {
             System.out.println("Where the fuck is: " + rootFolderPath);
         }
     }
+
+    @FXML
+    public void act() {
+        System.out.println("action");
+    }
 }

@@ -1,17 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ToolBar?>
 
-<ToolBar xmlns="http://javafx.com/javafx"
-            fx:id="toolBar"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.example.stamper.ToolBarController"
-            orientation="VERTICAL"
-            prefHeight="40.0">
+<ToolBar fx:id="toolBar" orientation="VERTICAL" prefHeight="40.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.stamper.ToolBarController">
     <items>
         <Button mnemonicParsing="false" text="Add" />
     </items>
