@@ -6,6 +6,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -19,16 +21,23 @@ import java.io.File;
 public class HelloController {
 
     @FXML
+    private ScrollPane scrollPane;
+
+    @FXML
     private ImageView imageView;
+
+    @FXML
+    private HBox arrowBox;
 
     @FXML
     private Button btnPrev, btnNext;
 
     @FXML
-    private Button btnOpenFile;
+    private Label pageNumberLabel;
 
     @FXML
-    private Label pageNumberLabel;
+    private Button btnOpenFile;
+
 
     private Stage stage;
     private PDDocument document;
@@ -38,6 +47,15 @@ public class HelloController {
 
     public void setStage(Stage stage) {
         this.stage = stage;
+    }
+
+    @FXML
+    public void initialize() {
+        scrollPane.setVisible(false);
+        scrollPane.setManaged(false);
+
+        arrowBox.setVisible(false);
+        arrowBox.setManaged(false);
     }
 
     @FXML
@@ -57,8 +75,15 @@ public class HelloController {
                 currentPage = 0;
                 renderPage(currentPage);
                 updateButtons();
-                btnOpenFile.setManaged(false);
+
                 btnOpenFile.setVisible(false);
+                btnOpenFile.setManaged(false);
+
+                arrowBox.setVisible(true);
+                arrowBox.setManaged(true);
+
+                scrollPane.setVisible(true);
+                scrollPane.setManaged(true);
             } catch (Exception e) {
                 e.printStackTrace();
             }
